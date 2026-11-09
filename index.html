@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tesztelő Gyakorló</title>
+  <meta name="description" content="Gyakorló és vizsga feladatsorok a Junior automata tesztelő tanfolyam elméleti anyagából.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a href="#" class="brand" id="homeLink">
+      <span class="brand-mark" aria-hidden="true">✓</span>
+      <span>Tesztelő Gyakorló</span>
+    </a>
+    <button class="icon-btn" id="themeToggle" type="button" aria-label="Téma váltása" title="Világos / sötét téma">◐</button>
+  </header>
+
+  <main id="app" class="container">
+    <!-- ===== Kezdőképernyő ===== -->
+    <section id="screen-start" class="screen">
+      <div class="hero">
+        <h1>Gyakorló feladatsorok</h1>
+        <p class="muted">Junior automata tesztelő tanfolyam – elméleti anyag alapján. <span id="totalCount"></span></p>
+      </div>
+
+      <form id="setupForm" class="card setup">
+        <fieldset>
+          <legend>Mód</legend>
+          <div class="seg" role="radiogroup">
+            <label class="seg-item">
+              <input type="radio" name="mode" value="practice" checked>
+              <span><strong>Gyakorló</strong><small>Azonnali visszajelzés és magyarázat minden kérdés után</small></span>
+            </label>
+            <label class="seg-item">
+              <input type="radio" name="mode" value="exam">
+              <span><strong>Vizsga</strong><small>Időre megy, értékelés a beadás után</small></span>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Témakörök</legend>
+          <div id="topicList" class="checks"></div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Kérdéskészlet</legend>
+          <div class="seg seg-3" role="radiogroup">
+            <label class="seg-item"><input type="radio" name="pool" value="all" checked><span><strong>Összes</strong><small>Minden kérdés a kiválasztott témákból</small></span></label>
+            <label class="seg-item"><input type="radio" name="pool" value="wrong"><span><strong>Hibázottak</strong><small id="wrongInfo">Amiket legutóbb elrontottál</small></span></label>
+            <label class="seg-item"><input type="radio" name="pool" value="unseen"><span><strong>Új kérdések</strong><small id="unseenInfo">Amiket még nem láttál</small></span></label>
+          </div>
+        </fieldset>
+
+        <div class="row">
+          <label class="field">
+            <span>Kérdések száma</span>
+            <select name="count">
+              <option value="10">10</option>
+              <option value="20" selected>20</option>
+              <option value="40">40</option>
+              <option value="60">60</option>
+              <option value="0">Mind</option>
+            </select>
+          </label>
+          <label class="field" id="timeField">
+            <span>Időkorlát (vizsga)</span>
+            <select name="time">
+              <option value="45">45 mp / kérdés</option>
+              <option value="60" selected>60 mp / kérdés</option>
+              <option value="90">90 mp / kérdés</option>
+              <option value="0">Nincs</option>
+            </select>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" name="shuffleOptions" checked>
+            <span>Válaszok keverése</span>
+          </label>
+        </div>
+
+        <p id="setupError" class="error" role="alert" hidden></p>
+        <button type="submit" class="btn btn-primary btn-lg">Indítás</button>
+      </form>
+
+      <section class="card" id="historyCard">
+        <div class="card-head">
+          <h2>Korábbi eredmények</h2>
+          <button type="button" class="btn btn-ghost btn-sm" id="clearHistory">Előzmények törlése</button>
+        </div>
+        <div id="historyList"></div>
+      </section>
+    </section>
+
+    <!-- ===== Kérdés képernyő ===== -->
+    <section id="screen-quiz" class="screen" hidden>
+      <div class="quiz-top">
+        <div class="quiz-meta">
+          <span id="qCounter" class="pill"></span>
+          <span id="qMode" class="pill pill-soft"></span>
+          <span id="qScore" class="pill pill-soft"></span>
+        </div>
+        <div id="timer" class="timer" hidden></div>
+      </div>
+      <div class="progress"><div id="progressBar" class="progress-bar"></div></div>
+
+      <article class="card question-card">
+        <div class="q-tags">
+          <span id="qTopic" class="tag"></span>
+          <span id="qSub" class="tag tag-soft"></span>
+          <span id="qType" class="tag tag-hint"></span>
+        </div>
+        <h2 id="qText" class="q-text"></h2>
+        <pre id="qCode" class="code" hidden><code></code></pre>
+        <div id="qOptions" class="options"></div>
+        <div id="feedback" class="feedback" hidden></div>
+      </article>
+
+      <div class="quiz-actions">
+        <button type="button" class="btn" id="prevBtn">← Előző</button>
+        <div class="spacer"></div>
+        <button type="button" class="btn btn-ghost" id="quitBtn">Kilépés</button>
+        <button type="button" class="btn btn-primary" id="checkBtn">Ellenőrzés</button>
+        <button type="button" class="btn btn-primary" id="nextBtn">Következő →</button>
+        <button type="button" class="btn btn-accent" id="submitBtn">Beadás</button>
+      </div>
+
+      <details class="card qmap-card" id="qmapWrap">
+        <summary>Kérdéstérkép</summary>
+        <div id="qmap" class="qmap"></div>
+      </details>
+      <p class="kbd-hint muted">Billentyűk: <kbd>1</kbd>–<kbd>5</kbd> választás · <kbd>Enter</kbd> ellenőrzés / tovább · <kbd>←</kbd> <kbd>→</kbd> lapozás</p>
+    </section>
+
+    <!-- ===== Eredmény képernyő ===== -->
+    <section id="screen-result" class="screen" hidden>
+      <div class="card result-hero">
+        <div class="score-ring" id="scoreRing"><span id="scorePct"></span></div>
+        <div>
+          <h1 id="resultTitle"></h1>
+          <p id="resultSub" class="muted"></p>
+          <div class="result-actions">
+            <button type="button" class="btn btn-primary" id="retryWrongBtn">Hibásak újra</button>
+            <button type="button" class="btn" id="newQuizBtn">Új feladatsor</button>
+          </div>
+        </div>
+      </div>
+
+      <section class="card">
+        <h2>Témakörönként</h2>
+        <div id="topicBreakdown" class="breakdown"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>Áttekintés</h2>
+          <label class="toggle"><input type="checkbox" id="onlyWrong"><span>Csak a hibásak</span></label>
+        </div>
+        <div id="reviewList" class="review"></div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="footer muted">
+    Gyakorló alkalmazás – az eredmények csak a böngésződben tárolódnak.
+  </footer>
+
+  <script src="js/questions.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
