@@ -396,6 +396,12 @@ legend { font-weight: 700; margin-bottom: 8px; padding: 0; }
 }
 .feedback.bad { border-left-color: var(--bad); background: var(--bad-soft); }
 .feedback strong { display: block; margin-bottom: 4px; }
+.source {
+  margin-top: 10px;
+  font-size: .92rem;
+  overflow-wrap: anywhere;
+}
+.source a { color: var(--primary); font-weight: 600; }
 
 .quiz-actions {
   display: flex;

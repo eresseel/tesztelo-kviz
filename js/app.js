@@ -5,7 +5,7 @@
     teszt: 'Tesztautomatizálás',
     web: 'Webfejlesztés (HTML, CSS, JS)',
     java: 'Java alapok és OOP',
-    halado: 'Java haladó, Mockito, TDD'
+    halado: 'Java haladó (GUI, adatbázis), Mockito, TDD'
   };
   const TYPE_HINT = {
     single: 'Egy helyes válasz',
@@ -48,6 +48,19 @@
   // Szöveg: HTML escape + `inline kód` kiemelés
   function fmt(s) {
     return esc(s).replace(/`([^`]+)`/g, '<code>$1</code>');
+  }
+
+  // Forrás-hivatkozás: melyik PDF hányadik oldalán található a megoldás
+  const PDF_DIR = 'elmelet/';
+  function sourceHtml(q) {
+    const src = Array.isArray(q.source) ? q.source.filter(s => s && s.file) : [];
+    if (!src.length) return '';
+    const links = src.map(s => {
+      const href = PDF_DIR + encodeURIComponent(s.file) + (s.page ? '#page=' + s.page : '');
+      const label = s.file + (s.page ? ', ' + s.page + '. oldal' : '');
+      return '<a href="' + esc(href) + '" target="_blank" rel="noopener">' + esc(label) + '</a>';
+    });
+    return '<div class="source">📄 Megoldás a tananyagban: ' + links.join(' · ') + '</div>';
   }
 
   const KW = {
@@ -342,7 +355,8 @@
     fb.className = 'feedback' + (ok ? '' : ' bad');
     const correctLetters = item.order.map((o, p) => item.q.answer.includes(o) ? LETTERS[p] : null).filter(Boolean).join(', ');
     fb.innerHTML = '<strong>' + (ok ? '✓ Helyes válasz!' : '✗ Nem jó. Helyes: ' + correctLetters) + '</strong>' +
-      (item.q.explanation ? fmt(item.q.explanation) : '');
+      (item.q.explanation ? fmt(item.q.explanation) : '') +
+      (ok ? '' : sourceHtml(item.q));
     fb.hidden = false;
   }
 
@@ -568,6 +582,7 @@
       });
       html += '</div>';
       if (q.explanation) html += '<div class="exp">💡 ' + fmt(q.explanation) + '</div>';
+      if (!ok) html += sourceHtml(q);
       div.innerHTML = html;
       box.appendChild(div);
     });

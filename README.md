@@ -21,6 +21,7 @@ index.html        – oldal
 css/style.css     – stílusok
 js/app.js         – alkalmazáslogika
 js/questions.js   – kérdésbank (window.QUESTIONS)
+elmelet/          – tananyag PDF-ek (ezekre mutatnak a forrás-linkek)
 .nojekyll         – GitHub Pages: Jekyll feldolgozás kikapcsolása
 ```
 
@@ -54,9 +55,13 @@ A `js/questions.js` minden sora egy kérdés:
   "code": { "lang": "java", "src": "int a = 7 / 2;\nSystem.out.println(a);" },  // opcionális
   "options": ["3", "3.5", "4", "Fordítási hiba"],
   "answer": [0],                    // a helyes opció(k) indexe, 0-tól
-  "explanation": "Egész osztás: `7 / 2` eredménye 3."
+  "explanation": "Egész osztás: `7 / 2` eredménye 3.",
+  "source": [{ "file": "JuniorJavaBackend_01.pdf", "page": 9 }]  // hol található a megoldás
 }
 ```
+
+- A kérdések kizárólag az `elmelet/` mappában lévő tananyag PDF-ekre épülnek.
+- `source`: a PDF fájlneve (az `elmelet/` mappán belül) és az oldalszám (a PDF-nézőben látható oldalindex). Rossz válasznál az app ide linkel: `elmelet/<fájl>#page=<oldal>`.
 
 - `truefalse` típusnál az `options` mindig `["Igaz", "Hamis"]`.
 - A szövegben a `` `backtick` `` közé írt rész kódként jelenik meg.
